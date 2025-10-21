@@ -1,0 +1,10 @@
+<svg
+  class="icon icon--arrow-dropdown"
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  viewBox="0 0 10 6"
+>
+  <path fill="#180405" fill-rule="evenodd" d="M9.35.65a.5.5 0 0 0-.7 0L5 4.29 1.35.65a.5.5 0 0 0-.7.7l4 4a.5.5 0 0 0 .7 0l4-4a.5.5 0 0 0 0-.7z" clip-rule="evenodd"/>
+</svg>

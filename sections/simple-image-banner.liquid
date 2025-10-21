@@ -1,0 +1,294 @@
+{%- style -%}
+  .section-{{ section.id }} .simple-banner {
+    min-height: {{ section.settings.banner_height }}vh;
+  }
+  .section-{{ section.id }} .simple-banner::after {
+    opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
+    background-color: {{ section.settings.overlay_color }};
+  }
+
+  .simple-banner {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .simple-banner__content {
+    padding: 4rem 1.6rem 5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    z-index: 2;
+    color: rgb(var(--color-foreground));
+  }
+  .simple-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .simple-banner__block {
+    width: 100%;
+  }
+  .simple-banner__heading { color: var(--color-foreground-heading); margin: 0; }
+  .simple-banner__heading p, .simple-banner__heading div { margin: 0; }
+  .simple-banner__buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.6rem; word-break: break-word; }
+  .simple-banner__button { width: 100%; }
+  .simple-banner__bg-image { position: absolute; z-index: 0; top: 0; bottom: 0; left: 0; right: 0; }
+  .simple-banner__bg-image img { width: 100%; height: 100%; object-fit: cover; }
+    .simple-banner__buttons .button--secondary {
+      background-color: var(--color-secondary-button-background) !important;
+      border: 1px solid var(--color-secondary-button-border) !important;
+      color: var(--color-secondary-button-text) !important;
+      transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .simple-banner__buttons .button--secondary:hover {
+    background-color: var(--color-secondary-button-hover-background) !important;
+    color: var(--color-secondary-button-hover-text) !important;
+    border: 1px solid var(--color-secondary-button-hover-border) !important;
+  }
+  
+  .simple-banner__block--icon-wrapper {
+    display: flex;
+    width: 100%;
+  }
+  .simple-banner__block--align-left { justify-content: flex-start; }
+  .simple-banner__block--align-center { justify-content: center; }
+  .simple-banner__block--align-right { justify-content: flex-end; }
+
+  @media screen and (max-width: 749px) {
+    .small-hide {
+      display: none !important;
+    }
+  }
+  @media screen and (min-width: 750px) {
+    .medium-hide,
+    .large-up-hide {
+      display: none !important;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .simple-banner__button { width: auto; }
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }} color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding{% unless section.settings.full_width %} page-width{% endunless %}">
+  <div id="Banner-{{ section.id }}" class="simple-banner{% if section.settings.full_width %} full-width{% endif %}">
+    <div class="simple-banner__content color-inverse">
+      {%- for block in section.blocks -%}
+        <div class="simple-banner__block" style="padding-top: {{ block.settings.padding_top }}px; padding-bottom: {{ block.settings.padding_bottom }}px;" {{ block.shopify_attributes }}>
+          {%- case block.type -%}
+            {%- when 'icon' -%}
+              <div class="simple-banner__block--icon-wrapper simple-banner__block--align-{{ block.settings.icon_alignment }}">
+                {%- if block.settings.icon != blank -%}
+                  <img
+                    src="{{ block.settings.icon | image_url: width: block.settings.icon_width }}"
+                    alt="{{ block.settings.icon.alt | escape }}"
+                    style="width: {{ block.settings.icon_width }}px; height: auto;"
+                    loading="lazy"
+                    width="{{ block.settings.icon_width }}"
+                    height="auto"
+                  >
+                {%- endif -%}
+              </div>
+            {%- when 'caption' -%}
+              <p class="caption uppercase">{{ block.settings.caption }}</p>
+            {%- when 'heading' -%}
+              <h2 class="simple-banner__heading" style="font-size: {{ block.settings.heading_size }}px;">
+                {%- assign has_mobile_heading = false -%}
+                {%- if block.settings.heading_mobile != blank and block.settings.heading_mobile.size > 7 -%}
+                  {%- assign has_mobile_heading = true -%}
+                {%- endif -%}
+
+                {%- if has_mobile_heading -%}
+                  <div class="small-hide">{{ block.settings.heading }}</div>
+                  <div class="medium-hide large-up-hide">{{ block.settings.heading_mobile }}</div>
+                {%- else -%}
+                  {{ block.settings.heading }}
+                {%- endif -%}
+              </h2>
+            {%- when 'text' -%}
+              <div class="simple-banner__text rte {{ block.settings.text_style }}">{{ block.settings.text }}</div>
+            {%- when 'buttons' -%}
+              <div class="simple-banner__buttons">
+                {%- if block.settings.button_label_1 != blank -%}
+                  <a href="{{ block.settings.button_link_1 | default: '#' }}" class="simple-banner__button button{% if block.settings.button_style_secondary_1 %} button--secondary{% else %} button--primary{% endif %}" {% if block.settings.button_new_window_1 %}target="_blank"{% endif %}>
+                    {{- block.settings.button_label_1 | escape -}}
+                  </a>
+                {%- endif -%}
+                {%- if block.settings.button_label_2 != blank -%}
+                  <a href="{{ block.settings.button_link_2 | default: '#' }}" class="simple-banner__button button{% if block.settings.button_style_secondary_2 %} button--secondary{% else %} button--primary{% endif %}" {% if block.settings.button_new_window_2 %}target="_blank"{% endif %}>
+                    {{- block.settings.button_label_2 | escape -}}
+                  </a>
+                {%- endif -%}
+              </div>
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- liquid
+      assign desktop_image = section.settings.bg_image
+      assign mobile_image = section.settings.mobile_bg_image
+    -%}
+
+    {%- if desktop_image != blank -%}
+      <div class="simple-banner__bg-image{% if mobile_image != blank %} small-hide{% endif %}">
+        <img
+          src="{{ desktop_image | image_url: width: 1920 }}"
+          srcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1200 }} 1200w, {{ desktop_image | image_url: width: 1920 }} 1920w"
+          sizes="100vw" alt="{{ desktop_image.alt | escape }}" loading="lazy"
+          width="{{ desktop_image.width }}" height="{{ desktop_image.height }}"
+        >
+      </div>
+    {%- endif -%}
+    {%- if mobile_image != blank -%}
+      <div class="simple-banner__bg-image medium-hide large-up-hide">
+        <img
+          src="{{ mobile_image | image_url: width: 750 }}"
+          srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 750 }} 750w"
+          sizes="100vw" alt="{{ mobile_image.alt | escape }}" loading="lazy"
+          width="{{ mobile_image.width }}" height="{{ mobile_image.height }}"
+        >
+      </div>
+    {%- endif -%}
+
+    {%- if desktop_image == blank and mobile_image == blank -%}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  </div>
+</div>
+
+{% if section.settings.show_section_divider %}
+  <div class="page-width">
+    <hr>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Simple image banner",
+  "tag": "section",
+  "class": "section section--full-width",
+  "settings": [
+     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    { "type": "checkbox", "id": "full_width", "default": false, "label": "Full width?" },
+    { "type": "image_picker", "id": "bg_image", "label": "Background image" },
+    { "type": "image_picker", "id": "mobile_bg_image", "label": "Mobile background image" },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range", "id": "image_overlay_opacity", "min": 0, "max": 100, "step": 5, "unit": "%",
+      "label": "Image overlay opacity", "default": 45
+    },
+    {
+      "type": "range", "id": "banner_height", "min": 20, "max": 100, "step": 5, "unit": "vh",
+      "label": "Banner height", "info": "As a percentage of screen height", "default": 50
+    },
+    { "type": "header", "content": "Section Padding" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 36 },
+    { "type": "range", "id": "mobile_padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Mobile top padding", "default": 36 },
+    { "type": "range", "id": "mobile_padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Mobile bottom padding", "default": 36 },
+    { "type": "checkbox", "id": "show_section_divider", "default": false, "label": "Show section divider at the end" }
+  ],
+  "blocks": [
+    {
+      "type": "icon", "name": "Icon", "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon" },
+        { "type": "range", "id": "icon_width", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Icon width", "default": 50 },
+        {
+          "type": "radio", "id": "icon_alignment",
+          "label": "Icon alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        { "type": "range", "id": "padding_top", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Top spacing", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Bottom spacing", "default": 16 }
+      ]
+    },
+    {
+      "type": "caption", "name": "Caption", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "caption", "default": "Default caption", "label": "Caption" },
+        { "type": "range", "id": "padding_top", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Top spacing", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Bottom spacing", "default": 16 }
+      ]
+    },
+    {
+      "type": "heading", "name": "Heading", "limit": 1,
+      "settings": [
+        { "type": "inline_richtext", "id": "heading", "default": "Image banner", "label": "Desktop heading" },
+        { "type": "richtext", "id": "heading_mobile", "label": "Mobile heading" },
+        { "type": "range", "id": "heading_size", "min": 24, "max": 100, "step": 2, "unit": "px", "label": "Heading size", "default": 48 },
+        { "type": "range", "id": "padding_top", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Top spacing", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Bottom spacing", "default": 16 }
+      ]
+    },
+    {
+      "type": "text", "name": "Text", "limit": 1,
+      "settings": [
+        { "type": "richtext", "id": "text", "default": "<p>Give customers details about the banner.</p>", "label": "Text" },
+        { "type": "select", "id": "text_style", "options": [{ "value": "body", "label": "Body" }, { "value": "subtitle", "label": "Subtitle" }], "default": "body", "label": "Text style" },
+        { "type": "range", "id": "padding_top", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Top spacing", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Bottom spacing", "default": 16 }
+      ]
+    },
+    {
+      "type": "buttons", "name": "Buttons", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "button_label_1", "default": "Button label", "label": "Button 1 label" },
+        { "type": "url", "id": "button_link_1", "label": "Button 1 link" },
+        { "type": "checkbox", "id": "button_new_window_1", "default": false, "label": "Open in new window" },
+        { "type": "checkbox", "id": "button_style_secondary_1", "default": false, "label": "Use outline button style" },
+        { "type": "text", "id": "button_label_2", "default": "Button label", "label": "Button 2 label" },
+        { "type": "url", "id": "button_link_2", "label": "Button 2 link" },
+        { "type": "checkbox", "id": "button_style_secondary_2", "default": false, "label": "Use outline button style" },
+        { "type": "range", "id": "padding_top", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Top spacing", "default": 0 },
+        { "type": "range", "id": "padding_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Bottom spacing", "default": 0 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Simple image banner",
+      "blocks": [ { "type": "heading" } ]
+    }
+  ]
+}
+{% endschema %}

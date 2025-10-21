@@ -1,0 +1,78 @@
+.recipient-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.recipient-fields__field {
+  margin-bottom: 24px;
+}
+
+.field-gift-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.field__label-gift-card {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.field__input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+input[type="date"] {
+  padding: 11px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  height: 38px;
+}
+input[type="email"] {
+  height: 38px;
+}
+input[type="date"]:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+textarea.field__input {
+  height: 110px;
+  resize: none;
+
+}
+
+/* Error states */
+.field__input:invalid:not(:placeholder-shown) {
+  border-color: #dc3545;
+}
+
+/* Placeholder styles */
+.field__input::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+
+  
+  .field__input,
+  input[type="date"] {
+    font-size: 14px;
+    padding: 10px;
+  }
+}

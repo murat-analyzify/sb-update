@@ -1,0 +1,447 @@
+{% liquid
+  # Get all brands from Shopify vendors (automatic, 1451 brands)
+  
+  # Get sorted vendors
+  assign sorted_vendors = shop.vendors | sort_natural
+  
+  # Create brands array directly with title and URL
+  assign all_brands = ''
+  
+  for vendor in sorted_vendors
+    if vendor != blank
+      if all_brands != ''
+        assign all_brands = all_brands | append: '~~~'
+      endif
+      assign vendor_handle = vendor | handle
+      assign brand_url = '/collections/brand-' | append: vendor_handle
+      assign all_brands = all_brands | append: vendor | append: '::' | append: brand_url
+    endif
+  endfor
+  
+  # Split into array
+  if all_brands != ''
+    assign all_brands = all_brands | split: '~~~'
+  else
+    assign all_brands = blank
+  endif
+%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  {% if section.settings.custom_mobile_padding %}
+    @media screen and (max-width: 749px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.mobile_padding_top }}px;
+        padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+      }
+    }
+  {% endif %}
+
+  .brands-alphabetical {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .brands-nav {
+    background: white;
+    padding: 20px 0;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 40px;
+  }
+
+  .brands-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .brands-nav__letter {
+    font-size: 28px;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .brands-nav__letter:hover {
+    color: #000;
+    background: #f5f5f5;
+  }
+
+  .brands-nav__letter.inactive {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .brands-nav__letter.inactive:hover {
+    color: #ccc;
+    background: transparent;
+  }
+
+  .brand-group {
+    margin-bottom: 60px;
+  }
+
+  .brand-group__header {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #000;
+  }
+
+  .brand-group__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .brand-group__item {
+    font-size: 14px;
+  }
+
+  .brand-group__link {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+  }
+
+  .brand-group__link:hover {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  @media screen and (max-width: 989px) {
+    .brand-group__list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .brands-alphabetical {
+      padding: 15px;
+    }
+
+    .brands-nav {
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+
+    .brands-nav__list {
+      gap: 3px 6px;
+    }
+
+    .brands-nav__letter {
+      font-size: 20px;
+      padding: 3px 6px;
+    }
+
+    .brand-group {
+      margin-bottom: 40px;
+    }
+
+    .brand-group__header {
+      font-size: 24px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    .brand-group__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 16px;
+    }
+
+    .brand-group__item {
+      font-size: 13px;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .brand-group__list {
+      grid-template-columns: 1fr;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}">
+  <div class="brands-alphabetical">
+    {% if all_brands.size > 0 %}
+      {% comment %} Create alphabet array {% endcomment %}
+      {% assign alphabet = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z' | split: ',' %}
+      
+      {% comment %} First pass: determine which letters have brands {% endcomment %}
+      {% assign active_letters = '' %}
+      {% for letter in alphabet %}
+        {% assign has_brands = false %}
+        {% for brand_item in all_brands %}
+          {% assign brand_parts = brand_item | split: '::' %}
+          {% assign first_char = brand_parts[0] | slice: 0 | upcase %}
+          {% if first_char == letter %}
+            {% assign has_brands = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if has_brands %}
+          {% assign active_letters = active_letters | append: letter | append: ',' %}
+        {% endif %}
+      {% endfor %}
+      
+      {% comment %} Check for special characters {% endcomment %}
+      {% assign has_special = false %}
+      {% for brand_item in all_brands %}
+        {% assign brand_parts = brand_item | split: '::' %}
+        {% assign first_char = brand_parts[0] | slice: 0 | upcase %}
+        {% assign is_letter = false %}
+        {% for letter in alphabet %}
+          {% if first_char == letter %}
+            {% assign is_letter = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% unless is_letter %}
+          {% assign has_special = true %}
+          {% break %}
+        {% endunless %}
+      {% endfor %}
+
+      {% comment %} Alphabetical Navigation {% endcomment %}
+      <nav class="brands-nav">
+        <ul class="brands-nav__list">
+          {% if has_special %}
+            <li>
+              <a href="#brand-group-special" class="brands-nav__letter">#</a>
+            </li>
+          {% else %}
+            <li>
+              <span class="brands-nav__letter inactive">#</span>
+            </li>
+          {% endif %}
+          
+          {% for letter in alphabet %}
+            {% if active_letters contains letter %}
+              <li>
+                <a href="#brand-group-{{ letter }}" class="brands-nav__letter">{{ letter }}</a>
+              </li>
+            {% else %}
+              <li>
+                <span class="brands-nav__letter inactive">{{ letter }}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+
+      {% comment %} Special group (numbers and symbols) {% endcomment %}
+      {% if has_special %}
+        <div id="brand-group-special" class="brand-group">
+          <h2 class="brand-group__header">#</h2>
+          <ul class="brand-group__list">
+            {% for brand_item in all_brands %}
+              {% assign brand_parts = brand_item | split: '::' %}
+              {% assign first_char = brand_parts[0] | slice: 0 | upcase %}
+              {% assign is_letter = false %}
+              {% for letter in alphabet %}
+                {% if first_char == letter %}
+                  {% assign is_letter = true %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% unless is_letter %}
+                <li class="brand-group__item">
+                  <a href="{{ brand_parts[1] }}" class="brand-group__link">{{ brand_parts[0] }}</a>
+                </li>
+              {% endunless %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% comment %} Letter groups - Direct loop, no string manipulation {% endcomment %}
+      {% for letter in alphabet %}
+        {% assign letter_has_brands = false %}
+        {% for brand_item in all_brands %}
+          {% assign brand_parts = brand_item | split: '::' %}
+          {% assign first_char = brand_parts[0] | slice: 0 | upcase %}
+          {% if first_char == letter %}
+            {% assign letter_has_brands = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        
+        {% if letter_has_brands %}
+          <div id="brand-group-{{ letter }}" class="brand-group">
+            <h2 class="brand-group__header">{{ letter }}</h2>
+            <ul class="brand-group__list">
+              {% for brand_item in all_brands %}
+                {% assign brand_parts = brand_item | split: '::' %}
+                {% assign first_char = brand_parts[0] | slice: 0 | upcase %}
+                {% if first_char == letter %}
+                  <li class="brand-group__item">
+                    <a href="{{ brand_parts[1] }}" class="brand-group__link">{{ brand_parts[0] }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    {% else %}
+      <p style="text-align: center; padding: 60px 20px; color: #666;">
+        No brands found. No products with vendor information exist in your store.
+
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.brands-nav__letter:not(.inactive)');
+    
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          const offset = 100;
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
+          
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Check for URL hash (#zzB format)
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#zz') && hash.length > 3) {
+      const letter = hash.substring(3).toUpperCase();
+      const targetId = letter === '#' ? '#brand-group-special' : `#brand-group-${letter}`;
+      
+      setTimeout(function() {
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          const offset = 100;
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
+          
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 500);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Our Brands",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Brands are automatically pulled from product vendors. All brands with products will appear here."
+    },
+    {
+      "type": "header",
+      "content": "Section padding - desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    },
+    {
+      "type": "paragraph",
+      "content": "By default, mobile padding is being calculated based on Dawn's ratio. If custom paddings for mobile is needed, customize them here"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_padding",
+      "label": "Custom mobile padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our Brands",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

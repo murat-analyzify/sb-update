@@ -1,0 +1,646 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .rich-text__heading.left,
+  .rich-text__caption.left,
+  .rich-text__text.left {
+    text-align: left;
+  }
+  .rich-text__heading.center,
+  .rich-text__caption.center,
+  .rich-text__text.center {
+    text-align: center;
+  }
+  .rich-text__heading.right,
+  .rich-text__caption.right,
+  .rich-text__text.right {
+    text-align: right;
+  }
+  .rich-text__buttons.left {
+    justify-content: flex-start;
+  }
+  .rich-text__buttons.center {
+    justify-content: center;
+  }
+  .rich-text__buttons.right {
+    justify-content: flex-end;
+  }
+
+  .rich-text__heading,
+  .rich-text__caption {
+    font-size: var(--custom-font-size);
+  }
+
+  .rich-text__text .rte-setting {
+    font-size: var(--custom-font-size);
+    color: var(--custom-text-color);
+  }
+
+  {{ section.settings.custom_css }}
+
+  .rich-text {
+    z-index: 1;
+  }
+  .rich-text__wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  .rich-text:not(.rich-text--full-width) .rich-text__wrapper {
+    margin: auto;
+    width: calc(100% - 8rem / var(--font-body-scale));
+  }
+  .rich-text__blocks {
+    width: 100%;
+  }
+  @media only screen and (max-width: 749px) {
+    .rich-text__wrapper {
+      width: 100%;
+    }
+  }
+  .rich-text__text.secondary {
+    color: rgb(var(--color-secondary-2));
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+  .rich-text__text.text--large {
+    font-size: var(--text-lg);
+  }
+  .rich-text__blocks.bigger-margin > * + * {
+    margin-top: 3.2rem;
+  }
+  @media screen and (max-width: 749px) {
+    .rich-text__buttons .button {
+      width: inherit;
+    }
+  }
+  @media screen and (min-width: 750px) {
+    .rich-text__wrapper {
+      width: 100%;
+    }
+    .rich-text__wrapper--left {
+      justify-content: flex-start;
+    }
+    .rich-text__wrapper--right {
+      justify-content: flex-end;
+    }
+    .rich-text__blocks {
+      max-width: 50rem;
+    }
+    .rich-text__buttons .button {
+      padding: 0 6.7rem;
+    }
+  }
+  @media screen and (min-width: 990px) {
+    .rich-text__blocks {
+      max-width: 62.2rem;
+    }
+  }
+  .rich-text__blocks * {
+    overflow-wrap: break-word;
+  }
+  .rich-text__blocks > * + * {
+    margin-top: 2.4rem;
+  }
+  .rich-text__caption {
+    margin-bottom: 2.8rem;
+  }
+  .rich-text__blocks .rich-text__heading {
+    margin: 0;
+  }
+  .rich-text__blocks > *:last-child {
+    margin-bottom: 0;
+  }
+  .rich-text__buttons {
+    display: inline-flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+    max-width: 45rem;
+    word-break: break-word;
+  }
+  .rich-text__text {
+    font-size: var(--text-base);
+  }
+  @media only screen and (min-width: 990px) {
+    .rich-text__text {
+      margin-top: 4rem;
+      font-size: var(--text-lg);
+    }
+  }
+  .rich-text__caption {
+    color: rgb(var(--color-secondary-2));
+  }
+{%- endstyle -%}
+
+<div class="isolate color-{{ section.settings.color_scheme }} gradient">
+  <div class="section-{{ section.id }}-padding">
+    <div class="rich-text__wrapper rich-text__wrapper--{{ section.settings.desktop_content_position }} {% unless section.settings.make_section_full_width %}page-width{% endunless %}">
+      <div class="rich-text__blocks {{ section.settings.content_alignment }}">
+        {%- for block in section.blocks -%}
+          <div class="rich-text__block block-{{ block.id }}" {{ block.shopify_attributes }}>
+            {%- style -%}
+              .block-{{ block.id }} {
+                margin-top: {{ block.settings.mobile_margin_top | default: 0 }}px;
+              }
+              @media screen and (min-width: 750px) {
+                .block-{{ block.id }} {
+                  margin-top: {{ block.settings.margin_top | default: 0 }}px;
+                }
+              }
+            {%- endstyle -%}
+
+            {%- case block.type -%}
+              {%- when 'heading' -%}
+                <h2
+                  class="rich-text__heading rte inline-richtext {{ block.settings.heading_alignment }}"
+                  style="--custom-font-size: {{ block.settings.font_size }}px;"
+                >
+                  {{ block.settings.heading }}
+                </h2>
+
+              {%- when 'caption' -%}
+                <p
+                  class="rich-text__caption {{ block.settings.caption_alignment }}"
+                  style="--custom-font-size: {{ block.settings.font_size }}px; {% if block.settings.text_uppercase %}text-transform: uppercase; letter-spacing: 0.1em;{% endif %}"
+                >
+                  {{ block.settings.caption | escape }}
+                </p>
+
+              {%- when 'text' -%}
+                <div
+                  class="rich-text__text rte {{ block.settings.text_alignment }}"
+                  style="--custom-font-size: {{ block.settings.font_size }}px; --custom-text-color: {{ block.settings.text_color }};"
+                >
+                  <div class="rte-setting">{{ block.settings.text }}</div>
+                </div>
+
+              {%- when 'button' -%}
+                <div class="rich-text__buttons {{ block.settings.button_alignment }}">
+                  <a href="{{ block.settings.button_link }}" class="button button--primary">
+                    {{- block.settings.button_label | escape -}}
+                  </a>
+                </div>
+
+              {%- when 'divider' -%}
+                <hr class="rich-text__divider">
+              {%- when 'image' -%}
+                <div class="rich-text__image">
+                  {% if block.settings.image != blank %}
+                    {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+                  {% endif %}
+                </div>
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Rich text",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_content_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Desktop content position"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Content alignment"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "default": "Talk about your brand",
+          "label": "Heading"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 12,
+          "max": 72,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 36
+        },
+        {
+          "type": "select",
+          "id": "heading_alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center",
+          "label": "Heading alignment"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 0
+        }
+      ]
+    },
+    {
+      "type": "caption",
+      "name": "Caption",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "caption",
+          "default": "Add a tagline",
+          "label": "Text"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 10,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 14
+        },
+        {
+          "type": "checkbox",
+          "id": "text_uppercase",
+          "label": "Make text uppercase?",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "caption_alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center",
+          "label": "Caption alignment"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 8
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Share information about your brand with your customers.</p>",
+          "label": "Text"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 12,
+          "max": 36,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 16
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color"
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Buttons",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Button label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_alignment",
+          "label": "Button alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Desktop)",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "mobile_margin_top",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "label": "Top margin (Mobile)",
+          "default": 16
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich text",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

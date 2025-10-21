@@ -1,0 +1,36 @@
+{% comment %}
+  Breadcrumb navigation snippet
+  Sources from: collection.metafields.custom.breadcrumb
+  Usage: {% render 'breadcrumb', collection: collection %}
+{% endcomment %}
+
+{% if collection.metafields.custom.breadcrumb.value != blank %}
+  <nav class="breadcrumb" aria-label="{{ 'accessibility.breadcrumb_navigation' | t }}">
+    <ol class="breadcrumb__list">
+      <li class="breadcrumb__item">
+        <a href="{{ routes.root_url }}" class="breadcrumb__link" aria-label="{{ 'breadcrumb.home' | t }}">
+          <span class="breadcrumb__home-icon svg-wrapper">
+            {{- 'icon-home.svg' | inline_asset_content -}}
+          </span>
+        </a>
+      </li>
+      
+      {% for breadcrumb_collection in collection.metafields.custom.breadcrumb.value %}
+        <li class="breadcrumb__item">
+          <span class="breadcrumb__separator" aria-hidden="true">
+            {{ 'breadcrumb.separator' | t }}
+          </span>
+          {% if forloop.last %}
+            <span class="breadcrumb__current" aria-current="page">
+              {{ breadcrumb_collection.metafields.custom.header1.value | default: breadcrumb_collection.title }}
+            </span>
+          {% else %}
+            <a href="{{ breadcrumb_collection.url }}" class="breadcrumb__link">
+              {{ breadcrumb_collection.metafields.custom.header1.value | default: breadcrumb_collection.title }}
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+{% endif %}

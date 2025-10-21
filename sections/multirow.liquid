@@ -1,0 +1,333 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .multirow {
+    width: 100%;
+  }
+  .multirow__row {
+    margin-bottom: 2rem;
+  }
+  .multirow__row:last-child {
+    margin-bottom: 0;
+  }
+  .multirow__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .multirow__media-wrapper {
+    width: 100%;
+  }
+  .multirow__media-wrapper img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .multirow__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  .multirow__heading {
+    margin: 0 0 1rem;
+    word-break: break-word;
+  }
+  .multirow__heading p {
+    margin: 0;
+  }
+  .multirow__text {
+    margin: 0 0 2rem;
+  }
+  .multirow__text.subtitle {
+    color: #5d5758;
+  }
+  .multirow__text p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .multirow__content.mobile-text-left {
+      text-align: left;
+      align-items: flex-start;
+    }
+    .multirow__content.mobile-text-center {
+      text-align: center;
+      align-items: center;
+    }
+    .multirow__content.mobile-text-right {
+      text-align: right;
+      align-items: flex-end;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .multirow__item {
+      flex-direction: row;
+    }
+    .multirow__item--v-top { align-items: flex-start; }
+    .multirow__item--v-middle { align-items: center; }
+    .multirow__item--v-bottom { align-items: flex-end; }
+
+    .multirow__content.text-left {
+      text-align: left;
+      align-items: flex-start;
+    }
+    .multirow__content.text-center {
+      text-align: center;
+      align-items: center;
+    }
+    .multirow__content.text-right {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .multirow__item--small .multirow__media-wrapper { width: 33%; }
+    .multirow__item--small .multirow__content { width: 67%; }
+    .multirow__item--medium .multirow__media-wrapper { width: 50%; }
+    .multirow__item--medium .multirow__content { width: 50%; }
+    .multirow__item--large .multirow__media-wrapper { width: 60%; }
+    .multirow__item--large .multirow__content { width: 40%; }
+
+    .multirow__item--left .multirow__media-wrapper { order: 1; }
+    .multirow__item--left .multirow__content { order: 2; padding-left: 4rem; }
+    .multirow__item--right .multirow__media-wrapper { order: 2; }
+    .multirow__item--right .multirow__content { order: 1; padding-right: 4rem; }
+  }
+{%- endstyle -%}
+
+<div class="multirow color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
+  <div class="page-width">
+    {%- for block in section.blocks -%}
+      <div
+        class="multirow__row content-container color-{{ section.settings.container_color_scheme }} gradient"
+        {{ block.shopify_attributes }}
+      >
+        <div
+          class="multirow__item
+            multirow__item--{{ section.settings.desktop_image_width }}
+            multirow__item--v-{{ section.settings.desktop_content_position }}
+            {%- if section.settings.desktop_image_placement == 'alternate' %}{% cycle 'multirow__item--left', 'multirow__item--right' %}{% else %}multirow__item--{{ section.settings.desktop_image_placement }}{% endif -%}"
+        >
+          <div class="multirow__media-wrapper">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1500 }}"
+                alt="{{ block.settings.image.alt | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+              >
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+
+          <div
+            class="multirow__content
+              text-{{ section.settings.desktop_content_alignment }}
+              mobile-text-{{ section.settings.mobile_content_alignment }}"
+          >
+            {%- if block.settings.heading != blank -%}
+              <h2 class="multirow__heading" style="font-size: {{ section.settings.heading_font_size }}px;">
+                {{ block.settings.heading }}
+              </h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <div class="multirow__text {{ section.settings.text_style }}">
+                {{ block.settings.text }}
+              </div>
+            {%- endif -%}
+            {%- if block.settings.button_label != blank -%}
+              {%- assign button_class = 'button--primary' -%}
+              {%- if section.settings.button_style == 'outline' -%}
+                {%- assign button_class = 'button--secondary' -%}
+              {%- endif -%}
+              <a
+                {% if block.settings.button_link == blank %}
+                  role="link" aria-disabled="true"
+                {% else %}
+                  href="{{ block.settings.button_link }}"
+                {% endif %}
+                class="button {{ button_class }}"
+              >
+                {{ block.settings.button_label | escape }}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Multirow",
+  "class": "section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_image_width",
+      "options": [
+        { "value": "small", "label": "Small (33%)" },
+        { "value": "medium", "label": "Medium (50%)" },
+        { "value": "large", "label": "Large (60%)" }
+      ],
+      "default": "large",
+      "label": "Desktop image width"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading font size",
+      "default": 40
+    },
+    {
+      "type": "radio",
+      "id": "text_style",
+      "options": [
+        { "value": "body", "label": "Body" },
+        { "value": "subtitle", "label": "Subtitle" }
+      ],
+      "default": "body",
+      "label": "Text style"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "options": [
+        { "value": "solid", "label": "Solid button" },
+        { "value": "outline", "label": "Outline button" }
+      ],
+      "default": "outline",
+      "label": "Button style"
+    },
+    {
+      "type": "radio",
+      "id": "desktop_content_position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "middle",
+      "label": "Desktop content position"
+    },
+    {
+      "type": "radio",
+      "id": "desktop_content_alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "label": "Desktop content alignment"
+    },
+    {
+      "type": "select",
+      "id": "desktop_image_placement",
+      "options": [
+        { "value": "alternate", "label": "Alternate from left" },
+        { "value": "left", "label": "Image on left" },
+        { "value": "right", "label": "Image on right" }
+      ],
+      "default": "alternate",
+      "label": "Desktop image placement"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "container_color_scheme",
+      "label": "Container color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Layout"
+    },
+    {
+      "type": "radio",
+      "id": "mobile_content_alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "label": "Mobile content alignment"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        { "type": "richtext", "id": "heading", "default": "<p>Our Commitment to accessibility.</p>", "label": "Heading" },
+        { "type": "richtext", "id": "text", "default": "<p>At St. Bernard.</p>", "label": "Text" },
+        { "type": "text", "id": "button_label", "label": "Button label" },
+        { "type": "url", "id": "button_link", "label": "Button link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Multirow",
+      "blocks": [
+        { "type": "row" },
+        { "type": "row" },
+        { "type": "row" }
+      ]
+    }
+  ]
+}
+{% endschema %}

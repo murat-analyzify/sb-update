@@ -1,0 +1,279 @@
+{%- liquid
+  assign columns_on_mobile = section.settings.columns_on_mobile
+
+  assign padding_top = section.settings.padding_top | default: 30 | append: 'px'
+  assign padding_bottom = section.settings.padding_bottom | default: 30 | append: 'px'
+
+  assign image_width = 500
+  if section.blocks.size == 1
+    assign image_width = 900
+  elsif section.blocks.size == 2
+    assign image_width = 710
+  endif
+-%}
+
+<style>
+  #multi-column-promo-{{ section.id }} {
+    --promo-grid-columns: {{ section.blocks.size }};
+    --promo-cols-mobile: {{ columns_on_mobile }};
+    padding-top: {{ padding_top }};
+    padding-bottom: {{ padding_bottom }}
+  }
+
+
+  .multi-column-promo__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--promo-grid-columns), 1fr);
+    gap: 16px;
+  }
+
+  .multi-column-promo__item-image-wrapper {
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .multi-column-promo__item--clickable {
+    cursor: pointer;
+  }
+
+  .multi-column-promo__item-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease-in-out;
+  }
+
+
+  .multi-column-promo__item-content {
+    text-align: center;
+  }
+
+  .multi-column-promo__item-title {
+    color: #180405;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 22px;
+    letter-spacing: 0%;
+    margin: 0 0 8px 0;
+  }
+
+  .multi-column-promo__item-subtitle,
+  .multi-column-promo__item-subtitle-link {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 100%;
+  }
+
+  .multi-column-promo__item-subtitle-link {
+    display: inline-block;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+@media (min-width: 769px) {
+    .multi-column-promo__item-image-wrapper:hover {
+      opacity: 0.6;
+      transition: opacity 0.2s ease-in-out;
+    }
+    .multi-column-promo__item-subtitle-link:hover {
+      opacity: 0.7;
+    }
+    .multi-column-promo__item-image-wrapper:hover .multi-column-promo__item-image {
+      transform: scale(1.05);
+    }
+    .multi-column-promo--layout-two .multi-column-promo__grid {
+      justify-content: space-between;
+    }
+    .multi-column-promo--layout-one .multi-column-promo__grid {
+      justify-content: center;
+    }
+    
+    .multi-column-promo--layout-two .multi-column-promo__item {
+      max-width: 710px;
+      width: 100%;
+    }
+    
+    .multi-column-promo--layout-two .multi-column-promo__item-image {
+      height: 640px;
+      object-fit: cover;
+    }
+
+    .multi-column-promo--layout-one .multi-column-promo__item {
+      max-width: 900px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .multi-column-promo--layout-one .multi-column-promo__item-image {
+      height: 650px;
+      object-fit: cover;
+    }
+  }
+
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .multi-column-promo__grid {
+      grid-template-columns: repeat(var(--promo-cols-mobile), 1fr);
+      gap: 32px;
+    }
+
+    .multi-column-promo__item-title {
+      font-size: 16px;
+    }
+
+    .multi-column-promo__item-subtitle-link {
+      text-decoration: underline;
+    }
+
+    .multi-column-promo__item-image-wrapper{
+      margin-bottom: 16px;
+    }
+  }
+</style>
+
+<div id="multi-column-promo-{{ section.id }}"  class="multi-column-promo page-width{% if section.blocks.size == 2 %} multi-column-promo--layout-two{% elsif section.blocks.size == 1 %} multi-column-promo--layout-one{% endif %}">
+  <div class="multi-column-promo__grid">
+    {%- for block in section.blocks -%}
+      <div 
+        class="multi-column-promo__item{% if block.settings.subtitle_link_url != blank %} multi-column-promo__item--clickable{% endif %}"
+        {% if block.settings.subtitle_link_url != blank %}
+          onclick="location.href='{{ block.settings.subtitle_link_url | escape }}'"
+        {% endif %}
+        {{ block.shopify_attributes }}
+      >
+        <div class="multi-column-promo__item-image-wrapper">
+          {%- if block.settings.image != blank -%}
+            <img 
+              class="multi-column-promo__item-image"
+              src="{{ block.settings.image | image_url: width: 500 }}"
+              alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+              width="{{ image_width }}"
+              height="{{ image_width | divided_by: block.settings.image.aspect_ratio | round }}"
+              loading="lazy">
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- endif -%}
+        </div>
+
+        <div class="multi-column-promo__item-content">
+          {%- if block.settings.title != blank -%}
+            <h3 class="multi-column-promo__item-title">{{ block.settings.title | escape }}</h3>
+          {%- endif -%}
+
+          {%- if block.settings.subtitle != blank -%}
+            {%- if block.settings.subtitle_link_url != blank -%}
+              <a href="{{ block.settings.subtitle_link_url }}" class="multi-column-promo__item-subtitle-link">
+                {{ block.settings.subtitle | escape }}
+              </a>
+            {%- else -%}
+              <p class="multi-column-promo__item-subtitle">{{ block.settings.subtitle | escape }}</p>
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- else -%}
+      {%- for i in (1..3) -%}
+        <div class="multi-column-promo__item">
+          <div class="multi-column-promo__item-image-wrapper">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          <div class="multi-column-promo__item-content">
+            <h3 class="multi-column-promo__item-title">Promo Title {{ i }}</h3>
+            <a href="#" class="multi-column-promo__item-subtitle-link">Shop The Looks</a>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Multi Column Promo",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Global settings"
+    },
+    {
+      "type": "select",
+      "id": "columns_on_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "One" },
+        { "value": "2", "label": "Two" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+  ],
+  "blocks": [
+    {
+      "type": "image_card",
+      "name": "Image Card",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Instant Refinement"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle (small text)",
+          "default": "Shop The Looks"
+        },
+        {
+          "type": "url",
+          "id": "subtitle_link_url",
+          "label": "Subtitle link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Multi Column Promo",
+      "blocks": [
+        { "type": "image_card" },
+        { "type": "image_card" },
+        { "type": "image_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

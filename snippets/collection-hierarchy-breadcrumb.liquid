@@ -1,0 +1,200 @@
+{% comment %}
+  Collection Hierarchy Breadcrumb navigation snippet
+  Based on category-tree breadcrumb structure but as a standalone component
+  Usage: {% render 'collection-hierarchy-breadcrumb', collection: collection %}
+{% endcomment %}
+
+{%- liquid
+  assign cat_key = 'filter.p.m.custom.hierarchy_paths'
+  assign category_filter = collection.filters | where: 'param_name', cat_key | first
+-%}
+
+{%- if category_filter -%}
+  {%- liquid
+    assign active_value = category_filter.values | where: 'active', true | first
+    assign active_label = active_value.label | default: ''
+  -%}
+
+  {%- comment -%} Koleksiyonun temsil ettiği "base" dizini bul (metafield > yedek metafield > handle) {%- endcomment -%}
+  {%- assign collection_hierarchy = collection.metafields.custom.hierarchy_paths.value | default: collection.metafields.hierarchy.path.value | default: '' -%}
+  {%- assign base_prefix = '' -%}
+
+  {%- if collection_hierarchy != blank -%}
+    {%- assign base_prefix = collection_hierarchy -%}
+  {%- endif -%}
+
+  {%- if base_prefix == blank and active_label == blank and collection.handle != blank -%}
+    {%- assign h = collection.handle | replace: 'no-index-', '' -%}
+    {%- assign matched_label = '' -%}
+
+    {%- for v in category_filter.values -%}
+      {%- assign segs = v.label | split: '/' -%}
+      {%- assign slug_flat = '' -%}
+      {%- for s in segs -%}
+        {%- assign seg_slug = s | handleize -%}
+        {%- if slug_flat == '' -%}
+          {%- assign slug_flat = seg_slug -%}
+        {%- else -%}
+          {%- assign slug_flat = slug_flat | append: '-' | append: seg_slug -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if slug_flat == h -%}
+        {%- assign matched_label = v.label -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if matched_label != '' -%}
+      {%- assign base_prefix = matched_label -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} active_label boşsa base'i aktif gibi kabul et {%- endcomment -%}
+  {%- if active_label == blank and base_prefix != blank -%}
+    {%- assign active_label = base_prefix -%}
+  {%- endif -%}
+
+  {%- if active_label != blank -%}
+    <nav 
+      class="collection-hierarchy-breadcrumb" 
+      aria-label="{{ 'accessibility.breadcrumb_navigation' | t }}"
+      data-cat-key="{{ cat_key }}"
+      data-base-prefix="{{ base_prefix }}">
+      
+      <ol class="collection-hierarchy-breadcrumb__list">
+        <!-- Hiyerarşi seviyeleri -->
+        {%- assign parts_for_filter = '' -%}
+        {%- assign active_parts = active_label | split: '/' -%}
+        {%- for part in active_parts -%}
+          {%- if parts_for_filter == blank -%}
+            {%- assign parts_for_filter = part -%}
+          {%- else -%}
+            {%- assign parts_for_filter = parts_for_filter | append: '/' | append: part -%}
+          {%- endif -%}
+
+          <li class="collection-hierarchy-breadcrumb__item">
+            {%- unless forloop.first -%}
+              <span class="collection-hierarchy-breadcrumb__separator" aria-hidden="true">›</span>
+            {%- endunless -%}
+            
+            {%- if forloop.last -%}
+              <span class="collection-hierarchy-breadcrumb__current" aria-current="page">{{ part }}</span>
+            {%- else -%}
+              <button 
+                class="collection-hierarchy-breadcrumb__link collection-hierarchy-breadcrumb__button" 
+                type="button"
+                data-filter-value="{{ parts_for_filter }}"
+                onclick="collectionHierarchyNavigate('{{ parts_for_filter }}')">
+                {{ part }}
+              </button>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ol>
+    </nav>
+
+    <style>
+    
+      .collection-hierarchy-breadcrumb__list { 
+        list-style: none; 
+        margin: 0; 
+        padding: 0; 
+        display: flex; 
+        flex-wrap: wrap; 
+        align-items: center; 
+        gap: 4px;
+      }
+      
+      .collection-hierarchy-breadcrumb__item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      
+      .collection-hierarchy-breadcrumb__link { 
+        color: rgb(var(--color-link)); 
+        text-decoration: none; 
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+      
+      .collection-hierarchy-breadcrumb__button {
+        background: none; 
+        border: none; 
+        cursor: pointer;
+        padding: 0;
+        font: inherit;
+        color: inherit;
+      }
+      
+      .collection-hierarchy-breadcrumb__link:hover,
+      .collection-hierarchy-breadcrumb__button:hover { 
+        text-decoration: underline; 
+        color: rgb(var(--color-link-hover, var(--color-link)));
+      }
+      
+      .collection-hierarchy-breadcrumb__separator { 
+        margin: 0 4px; 
+        color: rgb(var(--color-foreground-75)); 
+        font-size: 0.9rem;
+      }
+      
+      .collection-hierarchy-breadcrumb__current { 
+        font-weight: 600; 
+        color: rgb(var(--color-foreground)); 
+        font-size: 0.9rem;
+      }
+      
+      .collection-hierarchy-breadcrumb__home-icon {
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .collection-hierarchy-breadcrumb__home-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+
+      @media screen and (max-width: 750px) {
+        .collection-hierarchy-breadcrumb__list {
+          font-size: 0.85rem;
+        }
+        
+        .collection-hierarchy-breadcrumb__home-icon {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    </style>
+
+    <script>
+      // Direkt URL navigasyonu - filtre olmadan
+      function collectionHierarchyNavigate(filterValue) {
+        if (!filterValue) {
+          // Ana collections sayfasına git
+          window.location.href = '/collections';
+          return;
+        }
+        
+        // womans/clothings -> womans-clothings şeklinde çevir
+        const urlHandle = filterValue
+          .toLowerCase()
+          .split('/')
+          .map(part => part.trim().replace(/&/g, '-'))  // & işaretini - ile değiştir
+          .join('-')
+          .replace(/[^a-z0-9-]/g, '')  // Sadece harf, rakam ve tire
+          .replace(/-+/g, '-')         // Çoklu tireleri tek tire yap
+          .replace(/^-+|-+$/g, '');    // Başta ve sonda olan tireleri kaldır
+        
+        // Direkt collection URL'ine git - hiç filtre parametresi olmadan
+        const newUrl = `/collections/no-index-${urlHandle}`;
+        window.location.href = newUrl;
+      }
+    </script>
+  {%- endif -%}
+{%- endif -%}

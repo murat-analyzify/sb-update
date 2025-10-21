@@ -1,0 +1,154 @@
+<!-- custom-product-description.liquid -->
+{% if product and product.description %}
+  {% assign description = product.description %}
+  
+  {% comment %} Başındaki <br> etiketlerini temizle {% endcomment %}
+  {% assign cleaned_description = description %}
+  {% assign cleaned_description = cleaned_description | replace: '<br><br>', '<br>' %}
+  {% for i in (1..10) %}
+    {% if cleaned_description contains '<br>' %}
+      {% assign first_char_check = cleaned_description | slice: 0, 4 %}
+      {% if first_char_check == '<br>' %}
+        {% assign cleaned_description = cleaned_description | replace_first: '<br>', '' %}
+      {% else %}
+        {% break %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  
+  {% assign bold_sections = cleaned_description | split: '<b>' %}
+  
+  <div class="custom-product-description">
+    <!-- İlk bölüm (bold öncesi) -->
+    {% if bold_sections[0] and bold_sections[0] != '' %}
+      {% assign intro_content = bold_sections[0] | strip %}
+      {% if intro_content != '' %}
+        <div class="description-intro">
+          {{ intro_content }}
+        </div>
+      {% endif %}
+    {% endif %}
+    
+    <!-- Bold bölümleri accordion olarak -->
+    {% if bold_sections.size > 1 %}
+      <div class="accordion-container">
+        {% for section in bold_sections offset: 1 %}
+          {% assign parts = section | split: '</b>' %}
+          {% if parts.size >= 2 %}
+            {% assign title = parts[0] | strip | replace: ':', '' %}
+            {% assign content = parts[1] | strip %}
+            
+            {% comment %} Content başındaki <br> etiketlerini temizle {% endcomment %}
+            {% assign content = content | replace: '<br><br>', '<br>' %}
+            {% for i in (1..10) %}
+              {% if content contains '<br>' %}
+                {% assign first_char_check = content | slice: 0, 4 %}
+                {% if first_char_check == '<br>' %}
+                  {% assign content = content | replace_first: '<br>', '' %}
+                {% else %}
+                  {% break %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            
+            {% if title != '' and content != '' %}
+              <details class="accordion-item">
+                <summary class="accordion-title">
+                  <strong>{{ title }}</strong>
+                  <span class="accordion-icon"></span>
+                </summary>
+                <div class="accordion-content">
+                  {{ content }}
+                </div>
+              </details>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  
+  <style>
+    .custom-product-description {
+      margin: 0;
+    }
+    
+    .description-intro {
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #333;
+    }
+    
+    .accordion-container {
+      border: none;
+      border-radius: 0;
+    }
+    
+    .accordion-item {
+      border-top: 1px solid #e6e6e6;
+      border-bottom: none;
+    }
+    
+    .accordion-item:last-child {
+      border-bottom: 1px solid #e6e6e6;
+    }
+    
+    .accordion-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #000;
+      transition: none;
+      margin: 0;
+      padding-top:24px;
+      padding-bottom:24px;
+    }
+    
+    
+    .accordion-icon {
+      font-size: 1.25rem;
+      font-weight: 300;
+      line-height: 1;
+    }
+    
+    .accordion-item[open] .accordion-icon::before {
+      content: '-';
+    }
+    
+    .accordion-icon::before {
+      content: '+';
+    }
+    
+    .accordion-content {
+      background: transparent;
+      line-height: 1.5;
+      color: #333;
+      margin-bottom: 20px;
+      margin-top: -10px;
+    }
+    
+    .accordion-content p {
+      margin: 0 0 1rem 0;
+    }
+    
+    .accordion-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .accordion-content li {
+      margin-bottom: 0.25rem;
+      list-style-position: inside;
+    }
+  </style>
+  
+{% else %}
+  <p>Product description not available</p>
+{% endif %}

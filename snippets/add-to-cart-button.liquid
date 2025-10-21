@@ -1,0 +1,173 @@
+{% doc %}
+  This snippet is used to display the add to cart button.
+  Intended for add-to-cart.liquid block.
+
+  @param {string} can_add_to_cart - Whether the product can be added to the cart
+  @param {string} add_to_cart_text - The text of the add to cart button
+  @param {string} product - The product to add to the cart
+  @param {string} icon_only_on_mobile - Whether the icon is only visible on mobile
+  @param {string} text_only_on_mobile - Whether the text is only visible on mobile
+  @param {string} class - The class of the button
+{% enddoc %}
+
+{% stylesheet %}
+  .add-to-cart-text {
+    display: flex;
+    gap: var(--gap-2xs);
+    align-items: center;
+    justify-content: center;
+    animation-duration: var(--animation-speed);
+    animation-timing-function: var(--animation-easing);
+    animation-fill-mode: forwards;
+    transition: opacity var(--animation-speed) var(--animation-easing);
+  }
+
+  .atc-added .add-to-cart-text {
+    animation-name: atc-slide-out;
+  }
+
+  .add-to-cart-text--added {
+    position: absolute;
+    inset: 0;
+    animation-duration: var(--animation-speed);
+    animation-timing-function: var(--animation-easing);
+    animation-fill-mode: forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: width var(--animation-speed) var(--animation-easing),
+      opacity var(--animation-speed) var(--animation-easing);
+  }
+
+  .atc-added .add-to-cart-text--added {
+    animation-name: atc-slide-in;
+  }
+
+  @keyframes atc-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5em);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes atc-slide-out {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translateY(-1em);
+      opacity: 0;
+    }
+  }
+
+  .add-to-cart-text__content {
+    text-transform: uppercase;
+  }
+
+  .svg-wrapper .spinner {
+    width: 1.8rem;
+    display: inline-block;
+  }
+
+  .svg-wrapper .spinner {
+    animation: rotator 1.4s linear infinite;
+  }
+
+  @keyframes rotator {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(270deg);
+    }
+  }
+
+  .svg-wrapper .path {
+    stroke-dasharray: 280;
+    stroke-dashoffset: 0;
+    transform-origin: center;
+    stroke: rgb(var(--color-foreground));
+    animation: dash 1.4s ease-in-out infinite;
+  }
+
+  @media screen and (forced-colors: active) {
+    .svg-wrapper .path {
+      stroke: CanvasText;
+    }
+  }
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 280;
+  }
+  50% {
+    stroke-dashoffset: 75;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(450deg);
+  }
+}
+
+{% endstylesheet %}
+
+{%- liquid
+  assign default_add_to_cart_text = 'actions.add_to_cart' | t
+  assign product_variant_media = product.selected_or_first_available_variant.featured_media.preview_image | image_url: width: 100, crop: center
+  if product.selected_or_first_available_variant.featured_media.preview_image == blank
+    assign product_variant_media = product.featured_media.preview_image | image_url: width: 100, crop: center
+  endif
+-%}
+
+<add-to-cart-component
+  ref="addToCartButtonContainer"
+  data-product-variant-media="{{ product_variant_media }}"
+>
+  <button
+    id="{{ id }}"
+    type="submit"
+    name="add"
+    ref="addToCartButton"
+    on:click="/handleClick"
+    class="button {{ class }}"
+    {% unless can_add_to_cart %}
+      disabled
+    {% endunless %}
+  >
+    <span
+      class="add-to-cart-text"
+    >
+      {% comment %} {% if can_add_to_cart %}
+        <span class="svg-wrapper add-to-cart-icon{% if text_only_on_mobile %} is-visually-hidden-mobile{% endif %}">
+        </span>
+      {% endif %} {% endcomment %}
+      <span class="add-to-cart-text__content{% if icon_only_on_mobile %} is-visually-hidden-mobile{% endif %}">
+        {{- add_to_cart_text | default: default_add_to_cart_text -}}
+      </span>
+    </span>
+    
+    <span
+      aria-hidden="true"
+      class="add-to-cart-text--added"
+    >
+      <span class="svg-wrapper add-to-cart-icon--added">
+        {% comment %} {{- 'icon-arrow.svg' | inline_asset_content -}} {% endcomment %}
+        <svg aria-hidden="true" stroke="currentColor" focusable="false" class="spinner" width="18px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"> 
+          <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+        </svg>
+      </span>
+      {% comment %} <span class="{% if icon_only_on_mobile %}is-visually-hidden-mobile{% endif %}">
+        {{- 'actions.added' | t -}}
+      </span> {% endcomment %}
+    </span>
+  </button>
+</add-to-cart-component>

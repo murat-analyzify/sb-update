@@ -1,0 +1,42 @@
+#shopify-block-AaHZ5aVd4TzNOa2dib__okendo_star_rating_DnCrX7 {
+    display: none;
+    
+    @media screen and (max-width: 749px) {
+        display: block;
+        padding: 16px 0px 24px 0;
+        border-bottom: 1px solid #e6e6e6;
+    }
+}
+
+#shopify-block-AaHZ5aVd4TzNOa2dib__okendo_star_rating_DnCrX7 .okeReviews.oke-sr {
+    width: 100%;
+}
+#shopify-block-AaHZ5aVd4TzNOa2dib__okendo_star_rating_DnCrX7 .oke-is-clickable {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+#shopify-block-AaHZ5aVd4TzNOa2dib__okendo_star_rating_DnCrX7 .oke-sr-count {
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+#shopify-block-AaHZ5aVd4TzNOa2dib__okendo_star_rating_DnCrX7 .oke-sr-count span:not(:last-child) {
+    display: none;
+}
+
+#shopify-block-Ad280ZzlWR3VtTE1Ra__okendo_star_rating_FYyGfL {
+    display: none;
+
+    @media screen and (min-width: 750px) {
+      display: block;
+    }
+}
+
+
+#shopify-block-AdGtrV0RlREN2cGFwc__okendo_reviews_widget_RyVgrU {
+    width: 100%;
+}

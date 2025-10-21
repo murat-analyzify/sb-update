@@ -1,0 +1,243 @@
+{%- doc -%}
+  Text truncate block that can be added to sections.
+  Displays text with truncation after specified number of lines and shows read more/less toggle.
+{%- enddoc -%}
+
+{%- liquid
+  assign text_content = block.settings.text | strip_html | strip
+  assign max_lines = block.settings.max_lines | default: 2
+  assign text_alignment = block.settings.text_alignment | default: 'left'
+  assign read_more_text = block.settings.read_more_text | default: 'Devamını oku'
+  assign read_less_text = block.settings.read_less_text | default: 'Daha az göster'
+  assign font_size = block.settings.font_size | default: '1rem'
+  assign line_height = block.settings.line_height | default: '1.5'
+  assign text_color = block.settings.text_color | default: 'var(--color-foreground)'
+-%}
+
+{% if text_content != blank %}
+  <div 
+    class="text-truncate-block" 
+    data-text-truncate-block
+    style="
+      --truncate-max-lines: {{ max_lines }};
+      --truncate-font-size: {{ font_size }};
+      --truncate-line-height: {{ line_height }};
+      --truncate-text-color: {{ text_color }};
+      text-align: {{ text_alignment }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    <div class="text-truncate-block__content" data-content>
+      {{ block.settings.text }}
+    </div>
+    <button 
+      type="button" 
+      class="text-truncate-block__toggle is-hidden" 
+      data-toggle
+      data-read-more="{{ read_more_text }}"
+      data-read-less="{{ read_less_text }}"
+    >
+      {{ read_more_text }}
+    </button>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .text-truncate-block {
+    position: relative;
+    overflow: hidden;
+    width: 80%;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) {
+    .text-truncate-block {
+      width: 100%;
+    }
+  }
+
+  .text-truncate-block__content {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--truncate-max-lines, 2);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: var(--truncate-line-height, 1.5);
+    font-size: var(--truncate-font-size, 1rem);
+    color: var(--truncate-text-color, var(--color-foreground));
+    transition: all 0.3s ease;
+  }
+
+  .text-truncate-block__content.is-expanded {
+    -webkit-line-clamp: none;
+    display: block;
+  }
+
+  .text-truncate-block__toggle {
+    display: block;
+    margin: 0 auto 0;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    color: #121212a6;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-align: center;
+    transition: opacity 0.2s ease;
+    width: 80%;
+  }
+
+  .text-truncate-block__toggle:hover {
+    opacity: 0.8;
+  }
+
+  .text-truncate-block__toggle.is-hidden {
+    display: none;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class TextTruncateBlock {
+    constructor(element) {
+      this.element = element;
+      this.content = element.querySelector('[data-content]');
+      this.toggle = element.querySelector('[data-toggle]');
+      this.isExpanded = false;
+      
+      this.readMoreText = this.toggle.dataset.readMore;
+      this.readLessText = this.toggle.dataset.readLess;
+      this.maxLines = parseInt(getComputedStyle(element).getPropertyValue('--truncate-max-lines')) || 2;
+      
+      this.init();
+    }
+    
+    init() {
+      // Check if content overflows specified lines
+      this.checkOverflow();
+      
+      // Add event listener
+      this.toggle.addEventListener('click', () => this.toggleContent());
+      
+      // Check on resize
+      window.addEventListener('resize', () => this.checkOverflow());
+    }
+    
+    checkOverflow() {
+      // Reset to collapsed state to measure
+      this.content.classList.remove('is-expanded');
+      
+      // Check if content is overflowing by comparing scrollHeight and clientHeight
+      if (this.content.scrollHeight > this.content.clientHeight) {
+        this.toggle.classList.remove('is-hidden');
+      } else {
+        this.toggle.classList.add('is-hidden');
+        this.isExpanded = false;
+        this.toggle.textContent = this.readMoreText;
+      }
+    }
+    
+    toggleContent() {
+      this.isExpanded = !this.isExpanded;
+      
+      if (this.isExpanded) {
+        this.content.classList.add('is-expanded');
+        this.toggle.textContent = this.readLessText;
+      } else {
+        this.content.classList.remove('is-expanded');
+        this.toggle.textContent = this.readMoreText;
+      }
+    }
+  }
+  
+  // Initialize all text truncate blocks
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-text-truncate-block]').forEach(element => {
+      new TextTruncateBlock(element);
+    });
+  });
+  
+  // Also initialize on section load (for theme editor)
+  document.addEventListener('shopify:section:load', function(event) {
+    event.target.querySelectorAll('[data-text-truncate-block]').forEach(element => {
+      new TextTruncateBlock(element);
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Metin Kısaltma",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Metin",
+      "default": "<p>Bu uzun bir metin örneğidir. Belirtilen satır sayısından fazla olduğunda kesilecek ve altında 'Devamını oku' butonu görünecektir.</p>"
+    },
+    {
+      "type": "range",
+      "id": "max_lines",
+      "label": "Maksimum satır sayısı",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Metin hizalama",
+      "options": [
+        {
+          "value": "left",
+          "label": "Sol"
+        },
+        {
+          "value": "center",
+          "label": "Orta"
+        },
+        {
+          "value": "right",
+          "label": "Sağ"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "font_size",
+      "label": "Font boyutu",
+      "default": "1rem",
+      "info": "CSS font-size değeri (örn: 1rem, 16px, 1.2em)"
+    },
+    {
+      "type": "text",
+      "id": "line_height",
+      "label": "Satır yüksekliği",
+      "default": "1.5",
+      "info": "CSS line-height değeri (örn: 1.5, 1.2)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Metin rengi",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "read_more_text",
+      "label": "'Devamını oku' metni",
+      "default": "Devamını oku"
+    },
+    {
+      "type": "text",
+      "id": "read_less_text",
+      "label": "'Daha az göster' metni",
+      "default": "Daha az göster"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Metin Kısaltma"
+    }
+  ]
+}
+{% endschema %}

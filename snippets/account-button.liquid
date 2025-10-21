@@ -1,0 +1,88 @@
+{% comment %}
+  Accepts:
+  - tag: @string - The tag to use
+  - attributes: @string - Additional attributes to add to the tag
+{% endcomment %}
+
+{% stylesheet %}
+  .account-button {
+    color: var(--color-foreground);
+    appearance: none;
+    border: none;
+    background: none;
+    height: var(--button-size);
+    width: var(--button-size);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    transition: color var(--animation-speed) var(--animation-easing);
+  }
+
+  .account-button__avatar {
+    --account-button-size: 1.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--account-button-size);
+    height: var(--account-button-size);
+    border-radius: var(--style-border-radius-50);
+    background-color: var(--color-primary-button-background);
+    font-size: var(--font-size--sm);
+    font-weight: 500;
+    color: var(--color-primary-button-text);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .account-button__icon {
+    color: currentColor;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* The shop avatar doesn't bubble the click event up to our button, so we need to prevent that or the button doesn't work */
+  .account-button shop-user-avatar {
+    pointer-events: none;
+  }
+{% endstylesheet %}
+
+{%- assign tag = tag | default: 'button' -%}
+<{{ tag }}
+  class="account-button header-actions__action"
+  {{ attributes }}
+>
+  <span class="visually-hidden">
+    {{ 'accessibility.account' | t }}
+  </span>
+  {%- if customer.has_avatar? -%}
+    {{ customer | avatar }}
+  {%- elsif customer.first_name or customer.email -%}
+    {%- liquid
+      assign initial = customer.email | first
+
+      if customer.first_name != blank
+        assign initial = customer.first_name | first
+      endif
+    -%}
+    <span
+      class="account-button__avatar"
+      aria-hidden="true"
+    >
+      {{- initial -}}
+    </span>
+  {%- else -%}
+    <span
+      class="account-button__icon"
+      aria-hidden="true"
+    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.57812 17.9296C5.90844 15.1705 8.7312 13.267 11.9989 13.267C15.2666 13.267 18.0893 15.1704 19.4196 17.9296C17.678 20.1057 14.9999 21.5003 11.9989 21.5003C8.99752 21.5003 6.31978 20.1057 4.57812 17.9296Z" stroke="#4F4F4F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.9992 13.2669C14.0979 13.2669 15.7992 11.5656 15.7992 9.46687C15.7992 7.36819 14.0979 5.66687 11.9992 5.66687C9.90054 5.66687 8.19922 7.36819 8.19922 9.46687C8.19922 11.5656 9.90054 13.2669 11.9992 13.2669Z" stroke="#4F4F4F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 21.5004C17.2467 21.5004 21.5 17.2471 21.5 12.0004C21.5 6.75366 17.2467 2.50037 12 2.50037C6.75329 2.50037 2.5 6.75366 2.5 12.0004C2.5 17.2471 6.75329 21.5004 12 21.5004Z" stroke="#4F4F4F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+    </span>
+  {%- endif -%}
+</{{ tag }}>

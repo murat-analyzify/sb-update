@@ -1,0 +1,265 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "header_announcements_zjAhnn": {
+      "type": "header-announcements",
+      "blocks": {
+        "announcement_wzEbCh": {
+          "type": "_announcement",
+          "name": "t:names.announcement",
+          "settings": {
+            "text": "<a href=\"/pages/free-shipping-v2\" title=\"/pages/free-shipping-v2\">Free 2-Day Shipping on Orders of $199+*</a> <a href=\"https://www.saintbernard.com/pages/rewards-v2\" title=\"https://www.saintbernard.com/pages/rewards-v2\">Get Up To 5% Back In St. Bernard Rewards</a>",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "weight": "",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "announcement_wzEbCh"
+      ],
+      "name": "t:names.announcement_bar",
+      "settings": {
+        "speed": 5,
+        "section_width": "page-width",
+        "color_scheme": "",
+        "divider_width": 0,
+        "padding-block-start": 9,
+        "padding-block-end": 9
+      }
+    },
+    "header_section": {
+      "type": "header",
+      "blocks": {
+        "header-logo": {
+          "type": "_header-logo",
+          "disabled": true,
+          "static": true,
+          "settings": {
+            "hide_logo_on_home_page": false,
+            "custom_height": 22,
+            "custom_height_mobile": 12,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "disabled": true,
+      "settings": {
+        "logo_position": "center",
+        "menu_position": "center",
+        "menu_row": "bottom",
+        "show_search": true,
+        "search_position": "right",
+        "search_row": "top",
+        "show_country": false,
+        "country_selector_style": false,
+        "show_language": false,
+        "localization_position": "right",
+        "localization_row": "top",
+        "section_width": "page-width",
+        "section_height": "compact",
+        "enable_sticky_header": "always",
+        "divider_width": 0,
+        "divider_size": "page-width",
+        "border_width": 0,
+        "color_scheme_top": "scheme-1",
+        "color_scheme_bottom": "",
+        "color_scheme_transparent": "scheme-6",
+        "enable_transparent_header_home": false,
+        "home_color_scheme": "inverse",
+        "enable_transparent_header_product": false,
+        "product_color_scheme": "default",
+        "enable_transparent_header_collection": false,
+        "collection_color_scheme": "default"
+      }
+    },
+    "mega_menu_aaxkYp": {
+      "type": "mega-menu",
+      "blocks": {
+        "brands_PjbCCn": {
+          "type": "brands",
+          "settings": {
+            "menu_title": "brands",
+            "brands_menu": "brands-dev",
+            "brands_page_url": "shopify://pages/our-brands",
+            "heading": "brands",
+            "columns": 5
+          }
+        },
+        "banner_Y4TNwQ": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "New",
+            "banner_image": "shopify://shop_images/761A1041.png",
+            "banner_url": "https://www.saintbernard.com/pages/fall-lookbook",
+            "banner_title": "The Fall Lookbook"
+          }
+        },
+        "banner_gR8ge8": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "New",
+            "banner_image": "shopify://shop_images/761A3356_1_baa73edd-2f4f-4999-88f1-a9c8adca6a03.jpg",
+            "banner_url": "https://www.saintbernard.com/collections/shop?tag=lost-upstate",
+            "banner_title": "Lost Upstate"
+          }
+        },
+        "banner_A8M9zm": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Womens",
+            "banner_image": "shopify://shop_images/761A0238_a0ecfe39-a35f-43b1-b2a3-cec27f8a959b.png",
+            "banner_url": "https://www.saintbernard.com/collections/womens-clothing-sweaters",
+            "banner_title": "Sweater Season"
+          }
+        },
+        "banner_rJJmCb": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Womens",
+            "banner_image": "shopify://shop_images/761A8770_1.png",
+            "banner_url": "https://www.saintbernard.com/collections/womens-clothing-dresses",
+            "banner_title": "Womens"
+          }
+        },
+        "banner_kHr4bf": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Mens",
+            "banner_image": "shopify://shop_images/761A9285.png",
+            "banner_url": "https://www.saintbernard.com/collections/womens-clothing-sweaters",
+            "banner_title": "Sweaters for Him"
+          }
+        },
+        "banner_DxwG9w": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Kids",
+            "banner_image": "shopify://shop_images/KidsThumbnail_1.png",
+            "banner_url": "https://www.saintbernard.com/collections/kids",
+            "banner_title": "New for Kiddos"
+          }
+        },
+        "banner_YPGXFT": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Shoes",
+            "banner_image": "shopify://shop_images/mens_shoes_1.png",
+            "banner_url": "https://www.saintbernard.com/collections/shoes-mens",
+            "banner_title": "Men's Shoes"
+          }
+        },
+        "banner_RCrzcp": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Equipment",
+            "banner_image": "shopify://shop_images/union.jpg",
+            "banner_url": "shopify://collections/equipment-snowboard-bindings",
+            "banner_title": "Bindings"
+          }
+        },
+        "banner_hQ4nBw": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Equipment",
+            "banner_image": "shopify://shop_images/burton.jpg",
+            "banner_url": "shopify://collections/brand-burton",
+            "banner_title": "Burton"
+          }
+        },
+        "banner_xJihba": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Equipment",
+            "banner_image": "shopify://shop_images/smith_a4a7461e-a638-4133-b675-5ce7d5826fac.jpg",
+            "banner_url": "shopify://collections/equipment-helmets",
+            "banner_title": "Helmets"
+          }
+        },
+        "banner_RNYjrB": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Accessories",
+            "banner_image": "shopify://shop_images/761A3144_2.jpg",
+            "banner_url": "https://www.saintbernard.com/collections/shop?tag=fall-accessories",
+            "banner_title": "Fall Accessories"
+          }
+        },
+        "banner_XDAWVN": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Shoes",
+            "banner_image": "shopify://shop_images/761A9121.png",
+            "banner_url": "https://www.saintbernard.com/collections/shoes-womens-boots-booties",
+            "banner_title": "New Boots"
+          }
+        },
+        "banner_rfizDA": {
+          "type": "banner",
+          "settings": {
+            "menu_item": "Mens",
+            "banner_image": "shopify://shop_images/761A1058.png",
+            "banner_url": "https://www.saintbernard.com/collections/shop?tag=layering-essentials",
+            "banner_title": "Layering Essentials"
+          }
+        }
+      },
+      "block_order": [
+        "brands_PjbCCn",
+        "banner_Y4TNwQ",
+        "banner_gR8ge8",
+        "banner_A8M9zm",
+        "banner_rJJmCb",
+        "banner_kHr4bf",
+        "banner_DxwG9w",
+        "banner_YPGXFT",
+        "banner_RCrzcp",
+        "banner_hQ4nBw",
+        "banner_xJihba",
+        "banner_RNYjrB",
+        "banner_XDAWVN",
+        "banner_rfizDA"
+      ],
+      "name": "Mega Menu",
+      "settings": {
+        "logo_position": "center",
+        "logo_height_desktop": 20,
+        "logo_height_mobile": 30,
+        "logo_padding_top": 0,
+        "logo_padding_bottom": 0,
+        "logo_padding_left": 0,
+        "logo_padding_right": 0,
+        "hide_logo_on_home_page": false,
+        "enable_transparent_header": false,
+        "menu": "main-menu-v2",
+        "banner_position": "right",
+        "gift_card_url": "shopify://products/e-gift-card",
+        "store_locations_url": "shopify://pages/store-locations-v2",
+        "phone_number": "1.800.461.4450"
+      }
+    }
+  },
+  "order": [
+    "header_announcements_zjAhnn",
+    "header_section",
+    "mega_menu_aaxkYp"
+  ]
+}

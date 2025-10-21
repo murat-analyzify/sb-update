@@ -1,0 +1,494 @@
+{%- liquid
+  assign section_title = section.settings.section_title
+  assign products = section.settings.products
+  assign link_text = section.settings.link_text
+  assign link_url = section.settings.link_url
+  assign bg_color = section.settings.background_color
+  assign link_color = section.settings.link_color
+  assign link_hover_color = section.settings.link_hover_color
+  assign page_padding = section.settings.page_padding | default: 80 | append: 'px'
+  assign page_padding_top = section.settings.page_padding_top | default: 50 | append: 'px'
+  assign page_padding_bottom = section.settings.page_padding_bottom | default: 50 | append: 'px'
+  assign page_padding_mobile_top = section.settings.page_padding_mobile_top | default: 50 | append: 'px'
+  assign page_padding_mobile_bottom = section.settings.page_padding_mobile_bottom | default: 50 | append: 'px'
+
+  assign products_per_row_mobile = section.settings.products_per_row_mobile
+  assign mobile_grid_item_width = 100 | divided_by: products_per_row_mobile
+  assign show_variant_picker = section.settings.show_variant_picker
+-%}
+
+<style>
+  #ProductHighlights-{{ section.id }} {
+    --products-per-row-mobile: {{ products_per_row_mobile }};
+    --mobile-grid-item-width: {{ mobile_grid_item_width }}%;
+    --page-padding: {{ page_padding }}
+  }
+
+  #ProductHighlights-{{ section.id }} .product-highlights {
+    padding-top: {{ page_padding_top }};
+    padding-bottom: {{ page_padding_bottom }};
+  }
+
+  #ProductHighlights-{{ section.id }} .page-width {
+    padding: 0 var(--page-padding);
+  }
+
+  .product-highlights__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .product-highlights__title {
+    font-family: 'ButlerPro';
+    font-style: italic;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 100%;
+    margin-bottom: 0;
+    margin-top: 0;
+    color: #000000;
+  }
+
+  #ProductHighlights-{{ section.id }} .product-highlights__link {
+    text-decoration: underline;
+    font-size: 14px;
+    color: {{ link_color }};
+    transition: color 0.3s ease;
+  }
+
+  #ProductHighlights-{{ section.id }} .product-highlights__link:hover {
+    text-decoration: none;
+    color: {{ link_hover_color }};
+  }
+
+  .product-highlights__slider-wrapper {
+    position: relative;
+    margin-left: {{ page_padding }};
+  }
+
+  .product-highlights__grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 250px;
+    list-style-type: none;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 20px;
+    padding-left: 0;
+    padding-right: var(--page-padding);
+  }
+
+
+  .product-highlights__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-highlights__slider-arrow {
+    position: absolute;
+    top: 30%;
+    width: 42px;
+    height: 42px;
+    border-radius: 100%;
+    background-color: #FAFAF8;
+    opacity: 0.9;
+    border: 1px solid rgba(0,0,0,0.05);
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 8px 8px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out, transform 0.3s ease;
+    filter: drop-shadow(8px 8px 30px rgba(0, 0, 0, 0.2));
+  }
+
+  .product-highlights__slider-arrow--prev {
+    left: calc(var(--page-padding) - 21px);
+  }
+
+  .product-highlights__slider-arrow--next {
+    right: var(--page-padding);
+  }
+
+  .product-highlights__slider-arrow svg {
+    width: 15.42px;
+    height: 12px;
+    color: #483E3F;
+  }
+
+  .product-highlights__slider-arrow.is-hidden {
+    display: none;
+  }
+
+  @media (min-width: 769px) {
+    .product-highlights__slider-arrow:hover {
+      opacity: 1;
+      background-color: #e8e6e6;
+      transform: scale(1.15);
+    }
+    
+    .product-highlights__product-card a:hover .product-highlights__product-card-image-wrapper {
+      transform: scale(1.05);
+    }
+
+    .product-highlights__product-card a:hover .product-highlights__product-card-image--secondary {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    #ProductHighlights-{{ section.id }} .product-highlights__link:hover {
+      text-decoration: underline;
+      color: {{ link_color }};
+    }
+    #ProductHighlights-{{ section.id }} .product-highlights {
+      padding-top: {{ page_padding_mobile_top }};
+      padding-bottom: {{ page_padding_mobile_bottom }};
+    }
+    #ProductHighlights-{{ section.id }} .page-width {
+      padding: 0 15px;
+    }
+
+    .product-highlights__header {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+
+    .product-highlights__title {
+      font-size: 1.8rem;
+    }
+
+    #ProductHighlights-{{ section.id }} .product-highlights__link {
+      font-size: 14px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .product-highlights__slider-wrapper {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .product-highlights__grid {
+      grid-auto-columns: calc(var(--mobile-grid-item-width) - 15px + (15px / var(--products-per-row-mobile)));
+      scroll-snap-type: x mandatory;
+      gap: 4px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .product-highlights__product-card {
+      scroll-snap-align: start;
+    }
+
+    .product-highlights__slider-arrow {
+      display: none;
+    }
+  }
+</style>
+
+
+<product-highlights-slider id="ProductHighlights-{{ section.id }}">
+  <div class="product-highlights" style="background-color: {{ bg_color }};">
+    <div class="page-width">
+      {% if section_title != blank or link_text != blank %}
+        <div class="product-highlights__header">
+          {% if section_title != blank %}
+            <h2 class="product-highlights__title">{{ section_title | escape }}</h2>
+          {% endif %}
+
+          {% if link_text != blank and link_url != blank %}
+            <a href="{{ link_url }}" class="product-highlights__link">
+              <span>{{ link_text | escape }}</span>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-highlights__slider-wrapper">
+      <ul class="product-highlights__grid js-slider" role="list">
+        {% for product in products %}
+          <li class="product-highlights__product-card">
+            {% render 'product-card', product: product, show_variants: show_variant_picker %}
+          </li>
+        {% else %}
+          {% for i in (1..5) %}
+            <li class="product-highlights__product-card">
+              {% render 'product-card', show_variants: show_variant_picker %}
+            </li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+
+      <button
+        class="product-highlights__slider-arrow product-highlights__slider-arrow--prev js-slider-prev is-hidden"
+        aria-label="Previous"
+      >
+        <svg
+          transform="scale(-1 1)"
+          width="16"
+          height="12"
+          viewBox="0 0 16 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M12.4958 6.87812C12.511 6.86258 12.5078 6.85481 12.4863 6.85481C2.96734 6.85507 10.3707 6.85507 0.848845 6.85481C0.509235 6.85481 0.185587 6.64618 0.0630715 6.32822C-0.118506 5.8555 0.10258 5.33816 0.58865 5.1834C0.677243 5.15526 0.921875 5.1412 0.921875 5.1412C0.921875 5.1412 2.91028 5.1428 12.4787 5.1428C12.5058 5.1428 12.5098 5.13329 12.4907 5.11426C11.2839 3.8995 10.089 2.69546 8.9062 1.50213C8.79818 1.39333 8.72542 1.29511 8.6879 1.20748C8.36905 0.46303 9.10094 -0.239217 9.83165 0.0783415C9.91944 0.116663 10.0595 0.233236 10.2519 0.428059C11.8466 2.04346 13.436 3.64559 15.0204 5.23445C15.185 5.39926 15.2881 5.52334 15.3296 5.60668C15.4893 5.92705 15.4394 6.33425 15.1844 6.59111C13.5048 8.28369 11.8075 9.99448 10.0922 11.7235C9.7211 12.0973 9.13806 12.101 8.80164 11.6801C8.53267 11.3428 8.55382 10.85 8.85591 10.5449C10.0696 9.32078 11.2829 8.09851 12.4958 6.87812Z" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <button
+        class="product-highlights__slider-arrow product-highlights__slider-arrow--next js-slider-next"
+        aria-label="Next"
+      >
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.4958 6.87812C12.511 6.86258 12.5078 6.85481 12.4863 6.85481C2.96734 6.85507 10.3707 6.85507 0.848845 6.85481C0.509235 6.85481 0.185587 6.64618 0.0630715 6.32822C-0.118506 5.8555 0.10258 5.33816 0.58865 5.1834C0.677243 5.15526 0.921875 5.1412 0.921875 5.1412C0.921875 5.1412 2.91028 5.1428 12.4787 5.1428C12.5058 5.1428 12.5098 5.13329 12.4907 5.11426C11.2839 3.8995 10.089 2.69546 8.9062 1.50213C8.79818 1.39333 8.72542 1.29511 8.6879 1.20748C8.36905 0.46303 9.10094 -0.239217 9.83165 0.0783415C9.91944 0.116663 10.0595 0.233236 10.2519 0.428059C11.8466 2.04346 13.436 3.64559 15.0204 5.23445C15.185 5.39926 15.2881 5.52334 15.3296 5.60668C15.4893 5.92705 15.4394 6.33425 15.1844 6.59111C13.5048 8.28369 11.8075 9.99448 10.0922 11.7235C9.7211 12.0973 9.13806 12.101 8.80164 11.6801C8.53267 11.3428 8.55382 10.85 8.85591 10.5449C10.0696 9.32078 11.2829 8.09851 12.4958 6.87812Z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</product-highlights-slider>
+
+<script>
+  if (!customElements.get('product-highlights-slider')) {
+    class ProductHighlightsSlider extends HTMLElement {
+      constructor() {
+        super();
+        this.scrollDistance = 0;
+        this.slider = null;
+        this.prevButton = null;
+        this.nextButton = null;
+      }
+
+      connectedCallback() {
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              this.init();
+              observer.unobserve(this);
+            }
+          });
+        }, { threshold: 0.1 });
+
+        observer.observe(this);
+      }
+
+      init() {
+        if (this.dataset.initialized === 'true') {
+          return;
+        }
+
+        this.slider = this.querySelector('.js-slider');
+        
+        if (!this.slider) {
+          return;
+        }
+
+        this.prevButton = this.querySelector('.js-slider-prev');
+        this.nextButton = this.querySelector('.js-slider-next');
+
+        if (!this.prevButton || !this.nextButton) {
+          return;
+        }
+
+        this.prevButton.addEventListener('click', this.onPrevClick.bind(this));
+        this.nextButton.addEventListener('click', this.onNextClick.bind(this));
+        this.slider.addEventListener('scroll', this.updateButtonVisibility.bind(this));
+        
+        new ResizeObserver(() => {
+          this.calculateScrollDistance();
+          this.updateButtonVisibility();
+        }).observe(this.slider);
+        
+        this.calculateScrollDistance();
+        this.updateButtonVisibility();
+
+        this.dataset.initialized = 'true';
+      }
+      
+      calculateScrollDistance() {
+        const firstProduct = this.slider.querySelector('.product-highlights__product-card');
+        if (!firstProduct) {
+          return;
+        }
+
+        const sliderStyles = window.getComputedStyle(this.slider);
+        const productGap = parseFloat(sliderStyles.gap) || 0;
+        const newScrollDistance = firstProduct.offsetWidth + productGap;
+
+        if (newScrollDistance > 0) {
+           this.scrollDistance = newScrollDistance;
+        }
+      }
+
+      onPrevClick() {
+        this.slider.scrollBy({ left: -this.scrollDistance, behavior: 'smooth' });
+      }
+
+      onNextClick() {
+        this.slider.scrollBy({ left: this.scrollDistance, behavior: 'smooth' });
+      }
+
+      updateButtonVisibility() {
+        if (!this.slider || !this.slider.clientWidth) return;
+
+        const isScrollable = this.slider.scrollWidth > this.slider.clientWidth;
+        
+        if (!isScrollable) {
+          this.prevButton.classList.add('is-hidden');
+          this.nextButton.classList.add('is-hidden');
+          return;
+        }
+
+        const maxScroll = this.slider.scrollWidth - this.slider.clientWidth;
+        
+        this.prevButton.classList.toggle('is-hidden', this.slider.scrollLeft <= 0);
+        this.nextButton.classList.toggle('is-hidden', this.slider.scrollLeft >= maxScroll - 1);
+      }
+    }
+
+    customElements.define('product-highlights-slider', ProductHighlightsSlider);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product Highlights",
+  "tag": "section",
+  "class": "section--full-width",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Products",
+      "limit": 12
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link text",
+      "default": "Discover All"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link Color",
+      "default": "#180405"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link Hover Color",
+      "default": "#9b0910"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variant_picker",
+      "label": "Show / Hide Variant Picker",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Padding Settings"
+    },
+    {
+      "type": "range",
+      "id": "page_padding",
+      "label": "Page Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "page_padding_top",
+      "label": "Desktop Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "page_padding_bottom",
+      "label": "Desktop Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+        {
+      "type": "range",
+      "id": "page_padding_mobile_top",
+      "label": "Mobile Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "page_padding_mobile_bottom",
+      "label": "Mobile Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "radio",
+      "id": "products_per_row_mobile",
+      "label": "Products per row (mobile)",
+      "options": [
+        { "value": "1", "label": "One" },
+        { "value": "2", "label": "Two" }
+      ],
+      "default": "2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Highlights"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,29 @@
+<cart-icon
+  class="
+    header-actions__cart-icon
+    {% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}
+  "
+>
+  <span class="svg-wrapper">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20.3583 6.86231H3.5V22.0004H20.3583V6.86231Z" stroke="#4F4F4F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M15.9853 8.95337V6.03295C15.9853 3.80562 14.1693 2 11.9292 2C9.68904 2 7.87305 3.80562 7.87305 6.03295V8.95337" stroke="#4F4F4F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    
+  </span>
+
+  {% render 'cart-bubble', limit: 100, live_region: true %}
+</cart-icon>
+
+{% stylesheet %}
+  cart-icon:has(.cart-bubble__text-count:empty) {
+    --cart-bubble-size: 9px;
+    --cart-bubble-bottom: 9px;
+    --cart-bubble-left: 9px;
+
+    .svg-wrapper {
+      --cart-bubble-bottom: 4px;
+      --cart-bubble-left: 4px;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,66 @@
+<script type="module" src="{{ 'cart-note.js' | asset_url }}"></script>
+<style>
+  .cart-note__instructions::placeholder {
+    color: #999;
+    opacity: 1;
+  }
+  
+  /* Cart page'de direkt gösterim için stiller */
+  .cart-note--direct {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .cart-note--direct .cart-note__label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-2xs);
+    font-size: var(--cart-font-size--sm);
+    font-weight: normal;
+  }
+</style>
+<cart-note style="display: flex;width: 100%;">
+  {% if template.name == 'cart' %}
+    <!-- Cart page'de direkt textarea göster -->
+    <div class="cart-note cart-note--direct">
+      <label for="cart-note" class="cart-note__label">
+        {{ 'content.seller_note' | t }}
+      </label>
+      <textarea
+        form="cart-form"
+        on:input="/updateCartNote"
+        id="cart-note"
+        class="cart-note__instructions"
+        name="note"
+        placeholder="{{ 'content.seller_note_placeholder' | t }}">{{ cart.note }}</textarea>
+    </div>
+  {% else %}
+    <!-- Cart drawer'da accordion kullan -->
+    <accordion-custom class="cart-note">
+      <details class="details">
+        <summary class="cart-note__summary">
+          <p class="cart-note__label ">
+            {{ 'content.seller_note' | t }}
+          </p>
+          <span class="svg-wrapper icon-caret">
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+        </summary>
+
+        <div class="details-content cart-note__inner">
+          <label for="cart-note" class="visually-hidden">
+            {{- 'content.seller_note' | t -}}
+          </label>
+          <textarea
+            form="cart-form"
+            on:input="/updateCartNote"
+            id="cart-note"
+            class="cart-note__instructions"
+            name="note"
+            placeholder="{{ 'content.seller_note_placeholder' | t }}">{{ cart.note }}</textarea>
+        </div>
+      </details>
+    </accordion-custom>
+  {% endif %}
+</cart-note>

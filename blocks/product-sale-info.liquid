@@ -1,0 +1,105 @@
+{%- liquid
+  assign product = block.settings.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+-%}
+
+{% stylesheet %}
+  .product-sale-info-block {
+    width: 100%;
+  }
+
+  .sale-info {
+    font-size: var(--font-size--sm);
+  }
+
+  .saint-bernard-rewards {
+    font-size: 12px;
+    color: #5D5758;
+    font-weight: 500;
+  }
+{% endstylesheet %}
+
+<div 
+  class="product-sale-info-block spacing-style{% if product == blank and request.design_mode == false %} hidden{% endif %}"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="no-js-hidden" id="product-sale-info-{{ section.id }}" role="status">
+    {% render 'product-sale-info',
+      block: block,
+      product: product,
+      product_variant: product.selected_or_first_available_variant,
+      variant_sale: section.settings.variant_sale,
+      allproducts_sale: section.settings.allproducts_sale
+    %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:names.product_sale_info",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.product_sale_info",
+      "category": "t:categories.product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
+{% endschema %}
